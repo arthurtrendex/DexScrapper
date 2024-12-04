@@ -27,4 +27,5 @@ jobs:
 
     - name: Run webscraper.py
       run: |
-        python dexscraper/webscraper.py "${{ github.event.inputs.scraper_param }}"
+        python dexscraper/a.py
+      # python dexscraper/webscraper.py "${{ github.event.inputs.scraper_param }}"
