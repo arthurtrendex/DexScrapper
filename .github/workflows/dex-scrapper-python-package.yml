@@ -11,52 +11,71 @@ on:
 jobs:
   run-webscraper:
     runs-on: ubuntu-latest
+
     steps:
+    # Étape pour cloner le dépôt
     - uses: actions/checkout@v4
+
+    # Installer curl
     - name: Install curl
       run: |
-        apt-get install curl
+        sudo apt-get update
+        sudo apt-get install -y curl
 
+    # Configurer Python
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: 3.13
+
+    # Installer les dépendances
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip wheel setuptools
         pip install -r requirements.txt
-      # pip install -r dexscraper/requirements.txt
+        pip install -r dexscraper/requirements.txt
+
+    # Installer SeleniumBase
     - name: Install SeleniumBase
       run: |
         pip install .
+
+    # Installer Chrome
     - name: Install Chrome
       run: |
-        sudo apt install google-chrome-stable
+        sudo apt-get install -y google-chrome-stable
+
+    # Vérifier l'interface de console de SeleniumBase
     - name: Check the console scripts interface
       run: |
         seleniumbase
         sbase
+
+    # Installer Chromedriver
     - name: Install chromedriver
       run: |
         seleniumbase install chromedriver
+
+    # Exécuter le script webscraper.py
     - name: Run webscraper.py
       run: |
-        python dexscraper/a.py
-      # python dexscraper/webscraper.py "${{ github.event.inputs.scraper_param }}"
-    - name: Check if image exists
-        run: |
-          if [ ! -f ./downloaded/screen.png ]; then
-            echo "Image not found: ./downloaded/screen.png"
-            exit 1
-          fi
+        python dexscraper/webscraper.py "${{ github.event.inputs.scraper_param }}"
 
-      # Étape pour envoyer l'image via l'API Telegram
-      - name: Send image to Telegram
-        env:
-          BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: |
-          curl -X POST "https://api.telegram.org/bot7919513232:AAGY0BRtwdyflFilVYH3QXWWjReazvH1jj8/sendPhoto" \
-               -F chat_id="7491475542" \
-               -F photo="@./downloaded/screen.png" \
-               -F caption="Voici l'image envoyée depuis GitHub Actions !"
+    # Vérifier si l'image existe
+    - name: Check if image exists
+      run: |
+        if [ ! -f ./downloaded/screen.png ]; then
+          echo "Image not found: ./downloaded/screen.png"
+          exit 1
+        fi
+
+    # Envoyer l'image à Telegram
+    - name: Send image to Telegram
+      env:
+        BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: |
+        curl -X POST "https://api.telegram.org/bot7919513232:AAGY0BRtwdyflFilVYH3QXWWjReazvH1jj8/sendPhoto" \
+             -F chat_id="7491475542" \
+             -F photo="@./downloaded/screen.png" \
+             -F caption="Voici l'image envoyée depuis GitHub Actions !"
