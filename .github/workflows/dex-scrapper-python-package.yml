@@ -24,7 +24,24 @@ jobs:
         python -m pip install --upgrade pip wheel setuptools
         pip install -r requirements.txt
       # pip install -r dexscraper/requirements.txt
-
+    - name: Install SeleniumBase
+      run: |
+        pip install .
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        # Stop the build if there are flake8 issues
+        flake8 . --count --show-source --statistics --exclude=temp
+    - name: Install Chrome
+      run: |
+        sudo apt install google-chrome-stable
+    - name: Check the console scripts interface
+      run: |
+        seleniumbase
+        sbase
+    - name: Install chromedriver
+      run: |
+        seleniumbase install chromedriver
     - name: Run webscraper.py
       run: |
         python dexscraper/a.py
